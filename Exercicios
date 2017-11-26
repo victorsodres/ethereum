@@ -1,0 +1,188 @@
+- Criar conta da wallet
+
+1- Subir em uma rede privada para desenvolvimento geth --dev 
+
+2- Em outra aba - Acessar o console do no através do comando geth attach ipc:/endereço do IPC ( mostra quando sobe o geth)
+
+3- Vai abrir um ambiente em java para executar comandos no nó
+3.1 - executar personal,web3, admin, eth, debug e dar alguns tabs para verificar as funções de cada classe
+
+3.2 - Criar conta personal.newAcco..... ("sua frase de segurança")
+
+3.3 - setar o default do seu nó para a conta que acabou de ser criada..
+Ex:
+
+eth.defaultAccount = "seu hash conta criada"
+
+3.1 = Crie mais 3 contas
+
+3.2= Listar as contas criadas
+personal.listAccounts
+
+4- Como criar uma rede privada apontando para uma pasta
+geth --dev --data....
+
+5- Comando geth
+Principais comandos
+geth --dev --rpc --rpcaddr "127.0.0.0" --rpcport "8545" --rpcapi "web3,eth,net,personal" --datadir "private" --mine
+
+6 - Abrir mist
+ir até o diretório de instalação do Mist e copiar o endereço
+Ir no terminal colar o endereço, ex:
+/Mac/Mist --rpc http://localhost:8545 --swarmurl="http://swarm-gateways.net"
+
+
+------
+
+pragma solidity ^0.4.18;
+
+contract Person {
+    //atributos
+    address public accountOwner;
+    string public name;
+    bool
+    uint
+
+    nome
+    cpf
+    email;
+    dono;
+    dataNascimento;
+    function Pessoa(parametrosa){
+        nome = parametrosa;
+    }
+    function mudarEmail() <visibility specifier> returns (bool) {
+    //verificar se a pessoa que esta executando é o dono do contrato
+
+    return true;
+    }
+
+}
+
+
+R:
+
+pragma solidity ^0.4.16;
+
+contract Owner {
+    //atributos
+    address public dono;
+    modifier apenasDono() {
+        require (msg.sender == dono);
+        _;
+    }
+}
+
+contract RegistroPessoas {
+    address[] listaContaPessoas;
+    mapping(address => address) mapaPessoas;
+    event LogPersonSalvaNoRegistro(address _contaPessoa, address _contaContratoPessoa); 
+
+    function salvaPessoas(address enderecoContratoPessoa) public returns(bool) {
+        listaContaPessoas.push(msg.sender);
+        mapaPessoas[msg.sender] = enderecoContratoPessoa;  
+        LogPersonSalvaNoRegistro(msg.sender, enderecoContratoPessoa);
+    }
+}
+
+contract Pessoa is Owner {
+    string public nome;
+    string public email;
+    bool email_valido;
+    int cpf;
+    uint dataNascimento;
+    
+    event LogPersonEmailAlterado(address _pessoa, string emailAlterado); 
+
+    function Pessoa(string _nome, string _email, int _cpf, uint _dataNascimento, address _enderecoRegistroPessoas) public {
+        nome = _nome;
+        email = _email;
+        cpf = _cpf;
+        dataNascimento = _dataNascimento;
+        dono = msg.sender;
+        RegistroPessoas(_enderecoRegistroPessoas).salvaPessoas(this);
+    }
+    
+    function mudarEmail(string _newMail) public apenasDono {
+       email = _newMail;
+    }
+}
+
+
+
+---- Registro de pessoas  com limites no contrato
+
+pragma solidity ^0.4.18;
+
+contract Owner {
+    //atributos
+    address public dono;
+    modifier apenasDono() {
+        require (msg.sender == dono);
+        _;
+    }
+}
+
+contract RegistroPessoas is Owner {
+    address[] listaContaPessoas;
+    mapping(address => address) mapaPessoas;
+
+    uint256 limitContract=200;
+
+    address public novoContrato;
+    // modifier apenasLimit() {
+    //     require (limitContract <= listaContaPessoas.length);
+    //     _;
+    // }
+
+    function salvaPessoas(address enderecoContratoPessoa) public returns(bool) {
+        if (limitContract <= listaContaPessoas.length) {
+            listaContaPessoas.push(msg.sender);
+            mapaPessoas[msg.sender] = enderecoContratoPessoa;  
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function setNovoContrato(address _novoContrato) public apenasDono {
+        novoContrato = _novoContrato;
+    }
+
+}
+
+contract Person is Owner {
+    string public nome;
+    string public email;
+    bool email_valido;
+    int cpf;
+    uint dataNascimento;
+    
+    event LogPersonEmailAlterado(address _pessoa, string emailAlterado); 
+    event LogPersonSalvaNoRegistro(address _contaPessoa, address _contaContratoPessoa); 
+
+    function Person(string _nome, string _email, int _cpf, uint _dataNascimento, address _enderecoRegistroPessoas) public {
+        nome = _nome;
+        email = _email;
+        cpf = _cpf;
+        dataNascimento = _dataNascimento;
+        dono = msg.sender;
+
+        if (RegistroPessoas(_enderecoRegistroPessoas).salvaPessoas(this)){
+            LogPersonSalvaNoRegistro(msg.sender, this);
+        } else {
+            address novoContrato = RegistroPessoas(_enderecoRegistroPessoas).novoContrato();
+            RegistroPessoas(novoContrato).salvaPessoas(this);
+        }
+
+    }
+    
+    function mudarEmail(string _newMail) public apenasDono {
+       email = _newMail;
+    }
+}
+
+Exercícios:
+8. Adicionar um contador na classe de Registro de pessoas.
+9. Não pode registrar a mesma pessoa duas vezes.
+10. Pensar um projeto pessoal com blockchain.

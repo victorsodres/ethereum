@@ -1,0 +1,16 @@
+Contas para teste:
+
+Main:
+    sodre-ethereum
+    - 0x0c8a721782775228f7c5b145839d5f9d7e9c4a13
+
+Slaves:
+    sodre-ethereum-slave1
+    - 0xbd71527b36c53f4559915ac06fae2fd60f0d19f0
+    sodre-ethereum-slave2
+    - 0x0da8636d14cd602993a762c8254b0232715331ea
+    sodre-ethereum-slave3
+    - 0xbd7e465c1b2ce6832da0f18d15c7ad90b13e000e
+
+Registro Pessoas:
+    - 0xC6C7380d6702c15809ceCBe091C2bcfE86Ffc3C4
